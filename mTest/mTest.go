@@ -1,0 +1,59 @@
+package mTest
+
+import (
+	"github.com/kokizzu/gotro/A"
+	"github.com/kokizzu/gotro/D/Tt"
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/X"
+	"github.com/tarantool/go-tarantool"
+)
+
+type TestTable2 struct {
+	Id      uint64
+	Content string
+}
+
+func connectTarantool() *tarantool.Connection {
+	taran, err := tarantool.Connect(`localhost:3301`, tarantool.Opts{})
+	L.PanicIf(err, `failed to connect to tarantool`)
+	return taran
+}
+func (u *TestTable2) ToArray() A.X { //nolint:dupl false positive
+	var id any = nil
+	if u.Id != 0 {
+		id = u.Id
+	}
+	return A.X{
+		id,
+		u.Content, // 1
+	}
+}
+
+func (u *TestTable2) FromArray(a A.X) *TestTable2 { //nolint:dupl false positive
+	u.Id = X.ToU(a[0])
+	u.Content = X.ToS(a[1])
+	return u
+}
+
+func (u *TestTable2) ToMapFromSlice(row []any) map[string]any {
+	return map[string]any{
+		Tt.IdCol:  row[0],
+		`content`: row[1],
+	}
+}
+
+const TableTestTable2 = `test_table2`
+
+var tables = map[Tt.TableName]*Tt.TableProp{
+	// can only adding fields on back, and must IsNullable: true
+	// primary key must be first field and set to Unique: fieldName
+	TableTestTable2: {
+		Fields: []Tt.Field{
+			{Tt.IdCol, Tt.Unsigned},
+			{`content`, Tt.String},
+		},
+		AutoIncrementId: true,
+		Engine:          Tt.Vinyl,
+	},
+	// to be fair, not making an index on "content"
+}
