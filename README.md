@@ -5,7 +5,6 @@
 goos: linux
 goarch: amd64
 pkg: korm1/mTest
-cpu: AMD Ryzen 9 5950X 16-Core Processor
 BenchmarkGetAllS_Sqlite_GORM-32    78362             14981 ns/op            3697 B/op         67 allocs/op
 BenchmarkGetAllM_Sqlite_GORM-32    10000            446332 ns/op         1668883 B/op      35111 allocs/op
 BenchmarkGetRowS_Sqlite_GORM-32    65410             17721 ns/op            4406 B/op         91 allocs/op
