@@ -21,3 +21,8 @@ BenchmarkGetRowM_Taran-32         148023              8037 ns/op            2490
 PASS
 ok      korm1/mTest     18.601s
 ```
+
+Note:
+- disabled cache for KORM
+- tarantool not using ORM nor faster API, just raw sql query
+- tarantool 10x less rps when only 1 core utilized (without conc)
