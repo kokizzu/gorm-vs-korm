@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/kokizzu/gotro/D/Tt"
-	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
 	"github.com/sourcegraph/conc/pool"
 )
@@ -13,14 +12,6 @@ var taran *Tt.Adapter
 
 func TestGenerateOrm(t *testing.T) {
 	Tt.GenerateOrm(tables, false)
-}
-
-func init() {
-	taran = &Tt.Adapter{Connection: connectTarantool(), Reconnect: connectTarantool}
-	taran.MigrateTables(tables)
-	row1 := TestTable2{Id: 1, Content: `test`}
-	_, err := taran.Replace(TableTestTable2, row1.ToArray())
-	L.PanicIf(err, `failed to insert data`)
 }
 
 const queryAll = `SELECT * FROM "test_table2"`
