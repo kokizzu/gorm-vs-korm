@@ -16,7 +16,6 @@ InsertS_Postgres_Gorm-32    10000    154924 ns/op       1.55 s
 InsertS_Postgres_Korm-32    10000    163079 ns/op       1.63 s
 InsertS_Sqlite_Gorm-32      10000   1234051 ns/op      12.34 s
 InsertS_Sqlite_Korm-32      10000   2050994 ns/op      20.51 s
-InsertS_Sqlite_Korm-32      10000   2050996 ns/op      20.51 s
 InsertS_Taran_ORM-32        10000     29680 ns/op       0.30 s
 
 GetAllM_Cockroach_Gorm-32    1879    634957 ns/op   294824 B/op       6759 allocs/op
