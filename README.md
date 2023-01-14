@@ -11,9 +11,16 @@ go test -bench=Pgx -benchmem .
 goos: linux
 goarch: amd64
 
+# cockroachdb 21.1.11
+# postgresql 14.0-1
+# tarantool 2.8.2
+
 S = struct, M = map, A = array
 
-10K rows, GetAll select all rows, concurrency: 32
+# 10K rows, GetAll select all rows, concurrency: 32
+## korm 1.3.8
+## gorm 1.24.3
+## go-tarantool 1.10.0
 
 InsertS_Cockroach_Gorm-32   10000    163963 ns/op       1.64 s         
 InsertS_Cockroach_Korm-32   10000    434172 ns/op       4.34 s
@@ -56,7 +63,10 @@ GetRowS_Sqlite_Korm-32     117987     12081 ns/op     2148 B/op         64 alloc
 GetRowS_Taran_ORM-32       298116      3726 ns/op     1057 B/op         24 allocs/op
 GetRowS_Taran_Raw-32       161505      7447 ns/op     2425 B/op         51 allocs/op
 
-100K rows, GetAll select 1000 rows unordered, concurrency: 32
+# 100K rows, GetAll select 1000 rows unordered, concurrency: 32
+## korm 1.4.1
+## pgx 5.2.0
+## go-tarantool 1.10.0
 
 SQLite = too slow
 Gorm = too many errors, connection reset by peer
