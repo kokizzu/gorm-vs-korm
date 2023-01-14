@@ -1,6 +1,19 @@
 
 # Pgx, Gorm, Korm (Sqlite, PostgreSQL, CockroachDB) vs Tarantool
 
+## Test Env
+
+- cockroachdb 21.1.11
+- postgresql 14.0-1
+- tarantool 2.8.2 (because latest tagged on this version, not 2.10.4)
+
+```
+goos: linux
+goarch: amd64
+```
+
+## Usage
+
 ```shell
 ./clean-start.sh
 go test -bench=Korm -benchmem .
@@ -12,15 +25,6 @@ go test -bench=Pgx -benchmem .
 ## Result 10K rows, GetAll select all rows, concurrency: 32
 
 ```shell
-goos: linux
-goarch: amd64
-
-# cockroachdb 21.1.11
-# postgresql 14.0-1
-# tarantool 2.8.2
-
-S = struct, M = map, A = array
-
 ## korm 1.3.8
 ## gorm 1.24.3
 ## go-tarantool 1.10.0
@@ -69,14 +73,14 @@ GetRowS_Taran_Raw-32       161505      7447 ns/op     2425 B/op         51 alloc
 
 ## Result 100K rows, GetAll select 1000 rows unordered, concurrency: 32
 
+- SQLite = too slow
+- Gorm = too many errors, connection reset by peer
+- Korm = failed update postgres tests
+
 ```shell
 ## korm 1.4.1
 ## pgx 5.2.0
 ## go-tarantool 1.10.0
-
-SQLite = too slow
-Gorm = too many errors, connection reset by peer
-Korm = failed update postgres tests
 
 InsertS_Cockroach_Korm-32   100000   451436 ns/op  45.14 s
 Insert_Cockroach_Pgx-32     100000    99197 ns/op   9.92 s
@@ -116,6 +120,7 @@ GetRowS_Taran_Raw-32        113793    10017 ns/op     2509 B/op    56 allocs/op
 
 Note:
 - disabled cache for KORM
+- S = struct, M = map, A = array (slice of slice)
 - tarantool 10x less rps when only 1 core utilized (without `conc`)
 
 ## Conclusion
