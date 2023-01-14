@@ -1,5 +1,5 @@
 
-# Gorm+Korm (Sqlite, PostgreSQL, ) vs Tarantool
+# Pgx, Gorm, Korm (Sqlite, PostgreSQL, CockroachDB) vs Tarantool
 
 ```shell
 ./clean-start.sh
