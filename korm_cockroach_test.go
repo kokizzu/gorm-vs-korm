@@ -32,34 +32,34 @@ func BenchmarkInsertS_Cockroach_Korm(b *testing.B) {
 	p.Wait()
 }
 
-//func BenchmarkUpdate_Cockroach_Korm(b *testing.B) {
-//	if done() {
-//		b.SkipNow()
-//		return
-//	}
-//	defer timing()(2)
-//	b.N = total
-//	p := pool.New().WithMaxGoroutines(cores)
-//	for z := uint64(1); z <= total; z++ {
-//		z := z
-//		p.Go(func() {
-//			_, err := korm.Model[KormTestTable]().Database(kormCockroachDbName).
-//				Where("id = ?", z).
-//				Set(
-//					`content = ?`, S.EncodeCB63(total+z, 0),
-//				)
-//			assert.Nil(b, err)
-//			_, err = korm.Model[KormTestTable]().Database(kormCockroachDbName).
-//				Where("id = ?", z).
-//				Set(
-//					`content = ?`, S.EncodeCB63(z, 0),
-//				)
-//			assert.Nil(b, err)
-//		})
-//	}
-//	b.N *= 2
-//	p.Wait()
-//}
+func BenchmarkUpdate_Cockroach_Korm(b *testing.B) {
+	if done() {
+		b.SkipNow()
+		return
+	}
+	defer timing()(2)
+	b.N = total
+	p := pool.New().WithMaxGoroutines(cores)
+	for z := uint64(1); z <= total; z++ {
+		z := z
+		p.Go(func() {
+			_, err := korm.Model[KormTestTable]().Database(kormCockroachDbName).
+				Where("id = ?", z).
+				Set(
+					`content = ?`, S.EncodeCB63(total+z, 0),
+				)
+			assert.Nil(b, err)
+			_, err = korm.Model[KormTestTable]().Database(kormCockroachDbName).
+				Where("id = ?", z).
+				Set(
+					`content = ?`, S.EncodeCB63(z, 0),
+				)
+			assert.Nil(b, err)
+		})
+	}
+	b.N *= 2
+	p.Wait()
+}
 
 func BenchmarkGetAllS_Cockroach_Korm(b *testing.B) {
 	p := pool.New().WithMaxGoroutines(cores)
