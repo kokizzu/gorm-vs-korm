@@ -8,17 +8,16 @@ import (
 
 	"github.com/kamalshkeir/korm"
 	_ "github.com/kamalshkeir/pgdriver"
-	"github.com/kamalshkeir/sqlitedriver"
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/L"
 	"gorm.io/driver/postgres"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
 	"korm1/mTest"
 )
 
-const total = 10000
+const total = 100000
+const limit = 1000
 const cores = 32
 
 // connection strings
@@ -54,27 +53,27 @@ type KormTestTable struct {
 func TestMain(m *testing.M) {
 	var err error
 
-	log.Println(`sqlite`)
-	{
-		log.Println(`gorm`)
-		{
-			sqlitedriver.Use()
-			gormSqlite, err = gorm.Open(sqlite.Open("benchgorm.sqlite"), &gorm.Config{
-				SkipDefaultTransaction: true,
-			})
-			L.PanicIf(err, `gorm.Open`)
-			err = gormSqlite.AutoMigrate(&GormTestTable{})
-			L.IsError(err, `gormSqlite.AutoMigrate`)
-		}
-
-		log.Println(`korm`)
-		{
-			err = korm.New(korm.SQLITE, kormSqliteDbName)
-			L.PanicIf(err, `korm.New`)
-			err = korm.AutoMigrate[KormTestTable](kormTableName, kormSqliteDbName)
-			L.PanicIf(err, `korm.AutoMigrate`)
-		}
-	}
+	//log.Println(`sqlite`)
+	//{
+	//	log.Println(`gorm`)
+	//	{
+	//		sqlitedriver.Use()
+	//		gormSqlite, err = gorm.Open(sqlite.Open("benchgorm.sqlite"), &gorm.Config{
+	//			SkipDefaultTransaction: true,
+	//		})
+	//		L.PanicIf(err, `gorm.Open`)
+	//		err = gormSqlite.AutoMigrate(&GormTestTable{})
+	//		L.IsError(err, `gormSqlite.AutoMigrate`)
+	//	}
+	//
+	//	log.Println(`korm`)
+	//	{
+	//		err = korm.New(korm.SQLITE, kormSqliteDbName)
+	//		L.PanicIf(err, `korm.New`)
+	//		err = korm.AutoMigrate[KormTestTable](kormTableName, kormSqliteDbName)
+	//		L.PanicIf(err, `korm.AutoMigrate`)
+	//	}
+	//}
 
 	log.Println(`postgres`)
 	{
@@ -97,13 +96,13 @@ func TestMain(m *testing.M) {
 
 	log.Println(`cockroach`)
 	{
-		log.Println(`gorm`)
-		{
-			gormCockroach, err = gorm.Open(postgres.Open(gormCockroachConnStr))
-			L.PanicIf(err, `gorm.Open`)
-			err = gormCockroach.AutoMigrate(&GormTestTable{})
-			L.PanicIf(err, `gormCockroach.AutoMigrate`)
-		}
+		//log.Println(`gorm`)
+		//{
+		//	gormCockroach, err = gorm.Open(postgres.Open(gormCockroachConnStr))
+		//	L.PanicIf(err, `gorm.Open`)
+		//	err = gormCockroach.AutoMigrate(&GormTestTable{})
+		//	L.PanicIf(err, `gormCockroach.AutoMigrate`)
+		//}
 
 		log.Println(`korm`)
 		{

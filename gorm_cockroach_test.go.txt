@@ -9,15 +9,15 @@ import (
 	"gorm.io/gorm"
 )
 
-var gormPostgres *gorm.DB
+var gormCockroach *gorm.DB
 
-func BenchmarkInsertS_Postgres_Gorm(b *testing.B) {
+func BenchmarkInsertS_Cockroach_Gorm(b *testing.B) {
 	if done() {
 		b.SkipNow()
 		return
 	}
 	defer timing()()
-	err := gormPostgres.Exec(`TRUNCATE TABLE ` + gormTestTableName).Error
+	err := gormCockroach.Exec(`TRUNCATE TABLE ` + gormTestTableName).Error
 	assert.Nil(b, err)
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -26,7 +26,7 @@ func BenchmarkInsertS_Postgres_Gorm(b *testing.B) {
 	for z := uint64(1); z <= total; z++ {
 		z := z
 		p.Go(func() {
-			err := gormPostgres.Create(&GormTestTable{
+			err := gormCockroach.Create(&GormTestTable{
 				ID:      z,
 				Content: S.EncodeCB63(z, 0),
 			}).Error
@@ -36,35 +36,35 @@ func BenchmarkInsertS_Postgres_Gorm(b *testing.B) {
 	p.Wait()
 }
 
-func BenchmarkGetAllS_Postgres_Gorm(b *testing.B) {
+func BenchmarkGetAllS_Cockroach_Gorm(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
 			a := []GormTestTable{}
-			err := gormPostgres.Find(&a).Error
+			err := gormCockroach.Limit(limit).Find(&a).Error
 			assert.Nil(b, err)
 		})
 	}
 	p.Wait()
 }
 
-func BenchmarkGetAllM_Postgres_Gorm(b *testing.B) {
+func BenchmarkGetAllM_Cockroach_Gorm(b *testing.B) {
 	a := []map[string]any{}
 	b.ReportAllocs()
 	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
-			err := gormPostgres.Find(&GormTestTable{}).Scan(&a).Error
+			err := gormCockroach.Limit(limit).Find(&GormTestTable{}).Scan(&a).Error
 			assert.Nil(b, err)
 		})
 	}
 	p.Wait()
 }
 
-func BenchmarkGetRowS_Postgres_Gorm(b *testing.B) {
+func BenchmarkGetRowS_Cockroach_Gorm(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
@@ -72,7 +72,7 @@ func BenchmarkGetRowS_Postgres_Gorm(b *testing.B) {
 		i := i
 		p.Go(func() {
 			u := GormTestTable{}
-			err := gormPostgres.Where(&GormTestTable{
+			err := gormCockroach.Where(&GormTestTable{
 				Content: S.EncodeCB63(1+uint64(i)%total, 0),
 			}).First(&u).Error
 			assert.Nil(b, err)
@@ -81,7 +81,7 @@ func BenchmarkGetRowS_Postgres_Gorm(b *testing.B) {
 	p.Wait()
 }
 
-func BenchmarkGetRowM_Postgres_Gorm(b *testing.B) {
+func BenchmarkGetRowM_Cockroach_Gorm(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
@@ -89,7 +89,7 @@ func BenchmarkGetRowM_Postgres_Gorm(b *testing.B) {
 		i := i
 		p.Go(func() {
 			u := map[string]any{}
-			err := gormPostgres.Model(&GormTestTable{}).Where(&GormTestTable{
+			err := gormCockroach.Model(&GormTestTable{}).Where(&GormTestTable{
 				Content: S.EncodeCB63(1+uint64(i)%total, 0),
 			}).First(&u).Error
 			assert.Nil(b, err)

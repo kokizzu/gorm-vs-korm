@@ -17,6 +17,7 @@ var taran *Tt.Adapter
 
 const queryAll = `SELECT * FROM "test_table2"`
 const queryOne = `SELECT * FROM "test_table2" WHERE "content" = `
+const limit1k = ` LIMIT 1000`
 
 func BenchmarkInsertS_Taran_ORM(b *testing.B) {
 	if done() {
@@ -51,7 +52,7 @@ func BenchmarkGetAllS_Taran_Raw(b *testing.B) {
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
 			res := make([]*mTest.TestTable2, 0, total)
-			_ = taran.QuerySql(queryAll, func(row []any) {
+			_ = taran.QuerySql(queryAll+limit1k, func(row []any) {
 				obj := &mTest.TestTable2{}
 				obj.FromArray(row)
 				res = append(res, obj)
@@ -69,7 +70,7 @@ func BenchmarkGetAllM_Taran_Raw(b *testing.B) {
 		p.Go(func() {
 			obj := &mTest.TestTable2{}
 			res := make([]map[string]any, 0, total)
-			_ = taran.QuerySql(queryAll, func(row []any) {
+			_ = taran.QuerySql(queryAll+limit1k, func(row []any) {
 				m := obj.ToMapFromSlice(row)
 				res = append(res, m)
 			})

@@ -3,91 +3,95 @@ package gorm_vs_korm
 import (
 	"testing"
 
-	"github.com/kamalshkeir/korm"
 	"github.com/kokizzu/gotro/S"
 	"github.com/sourcegraph/conc/pool"
 	"github.com/zeebo/assert"
+	"gorm.io/gorm"
 )
 
-func BenchmarkInsertS_Postgres_Korm(b *testing.B) {
+var gormPostgres *gorm.DB
+
+func BenchmarkInsertS_Postgres_Gorm(b *testing.B) {
 	if done() {
 		b.SkipNow()
 		return
 	}
 	defer timing()()
+	err := gormPostgres.Exec(`TRUNCATE TABLE ` + gormTestTableName).Error
+	assert.Nil(b, err)
 	b.ReportAllocs()
 	b.ResetTimer()
 	b.N = total
-	err := korm.Exec(kormPostgresDbName, `TRUNCATE TABLE `+kormTableName)
-	assert.Nil(b, err)
 	p := pool.New().WithMaxGoroutines(cores)
 	for z := uint64(1); z <= total; z++ {
 		z := z
 		p.Go(func() {
-			_, err := korm.Model[KormTestTable]().Database(kormPostgresDbName).Insert(&KormTestTable{
-				Id:      z,
+			err := gormPostgres.Create(&GormTestTable{
+				ID:      z,
 				Content: S.EncodeCB63(z, 0),
-			})
+			}).Error
 			assert.Nil(b, err)
 		})
 	}
 	p.Wait()
 }
 
-func BenchmarkGetAllS_Postgres_Korm(b *testing.B) {
+func BenchmarkGetAllS_Postgres_Gorm(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
-			_, err := korm.Model[KormTestTable]().Database(kormPostgresDbName).Limit(limit).All()
+			a := []GormTestTable{}
+			err := gormPostgres.Limit(limit).Find(&a).Error
 			assert.Nil(b, err)
 		})
 	}
 	p.Wait()
 }
 
-func BenchmarkGetAllM_Postgres_Korm(b *testing.B) {
+func BenchmarkGetAllM_Postgres_Gorm(b *testing.B) {
+	a := []map[string]any{}
 	b.ReportAllocs()
 	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
-			_, err := korm.Table(kormTableName).Database(kormPostgresDbName).Limit(limit).All()
-			if err != nil {
-				b.Error("error BenchmarkGetAllM:", err)
-			}
+			err := gormPostgres.Limit(limit).Find(&GormTestTable{}).Scan(&a).Error
+			assert.Nil(b, err)
 		})
 	}
 	p.Wait()
 }
 
-func BenchmarkGetRowS_Postgres_Korm(b *testing.B) {
+func BenchmarkGetRowS_Postgres_Gorm(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		i := i
 		p.Go(func() {
-			_, err := korm.Model[KormTestTable]().Where("content = ?",
-				S.EncodeCB63(1+uint64(i)%total, 0),
-			).Database(kormPostgresDbName).One()
+			u := GormTestTable{}
+			err := gormPostgres.Where(&GormTestTable{
+				Content: S.EncodeCB63(1+uint64(i)%total, 0),
+			}).First(&u).Error
 			assert.Nil(b, err)
 		})
 	}
 	p.Wait()
 }
 
-func BenchmarkGetRowM_Postgres_Korm(b *testing.B) {
+func BenchmarkGetRowM_Postgres_Gorm(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		i := i
 		p.Go(func() {
-			_, err := korm.Table(kormTableName).Database(kormPostgresDbName).Where("content = ?",
-				S.EncodeCB63(1+uint64(i)%total, 0),
-			).One()
+			u := map[string]any{}
+			err := gormPostgres.Model(&GormTestTable{}).Where(&GormTestTable{
+				Content: S.EncodeCB63(1+uint64(i)%total, 0),
+			}).First(&u).Error
 			assert.Nil(b, err)
 		})
 	}

@@ -10,6 +10,8 @@ go test -bench=Taran -benchmem .
 goos: linux
 goarch: amd64
 
+10K rows, GetAll select all rows
+
 InsertS_Cockroach_Gorm-32   10000    163963 ns/op       1.64 s         
 InsertS_Cockroach_Korm-32   10000    434172 ns/op       4.34 s
 InsertS_Postgres_Gorm-32    10000    154924 ns/op       1.55 s
@@ -50,6 +52,32 @@ GetRowS_Sqlite_Gorm-32      70897     16205 ns/op     4183 B/op         92 alloc
 GetRowS_Sqlite_Korm-32     117987     12081 ns/op     2148 B/op         64 allocs/op
 GetRowS_Taran_ORM-32       298116      3726 ns/op     1057 B/op         24 allocs/op
 GetRowS_Taran_Raw-32       161505      7447 ns/op     2425 B/op         51 allocs/op
+
+100K rows, GetAll select 1000 rows unordered
+
+SQLite = too slow
+Gorm = too many errors, connection reset by peer
+
+InsertS_Cockroach_Korm-32   100000   451436 ns/op      45.14 s
+InsertS_Postgres_Korm-32    100000   172047 ns/op      17.20 s
+InsertS_Taran_ORM-32        100000    36685 ns/op       3.67 s
+
+GetAllM_Cockroach_Korm-32     5757   191306 ns/op   418047 B/op  5973 allocs/op
+GetAllM_Postgres_Korm-32     10000   117168 ns/op   391829 B/op  5729 allocs/op
+GetAllM_Taran_Raw-32          1640   742542 ns/op  1248536 B/op  6731 allocs/op
+
+GetAllS_Cockroach_Korm-32     4272   244311 ns/op   167806 B/op  7998 allocs/op
+GetAllS_Postgres_Korm-32      6567   185029 ns/op   165941 B/op  7764 allocs/op
+GetAllS_Taran_Raw-32          1689   734751 ns/op   936548 B/op  5731 allocs/op
+
+GetRowM_Cockroach_Korm-32    32676    36936 ns/op     1697 B/op    43 allocs/op
+GetRowM_Postgres_Korm-32     68497    16393 ns/op     1696 B/op    43 allocs/op
+GetRowM_Taran_Raw-32        130099     8951 ns/op     2498 B/op    55 allocs/op
+
+GetRowS_Cockroach_Korm-32     9468   153688 ns/op     2684 B/op    71 allocs/op
+GetRowS_Postgres_Korm-32     10000   128368 ns/op     2682 B/op    71 allocs/op
+GetRowS_Taran_ORM-32        297463     3724 ns/op     1058 B/op    24 allocs/op
+GetRowS_Taran_Raw-32        113793    10017 ns/op     2509 B/op    56 allocs/op
 ```
 
 Note:

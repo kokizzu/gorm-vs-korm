@@ -40,7 +40,7 @@ func BenchmarkGetAllS_Cockroach_Korm(b *testing.B) {
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
-			_, err := korm.Model[KormTestTable]().Database(kormCockroachDbName).All()
+			_, err := korm.Model[KormTestTable]().Database(kormCockroachDbName).Limit(limit).All()
 			assert.Nil(b, err)
 		})
 	}
@@ -53,7 +53,7 @@ func BenchmarkGetAllM_Cockroach_Korm(b *testing.B) {
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
-			_, err := korm.Table(kormTableName).Database(kormCockroachDbName).All()
+			_, err := korm.Table(kormTableName).Database(kormCockroachDbName).Limit(limit).All()
 			if err != nil {
 				b.Error("error BenchmarkGetAllM:", err)
 			}
