@@ -3,7 +3,6 @@ package gorm_vs_korm
 import (
 	"fmt"
 	"log"
-	"os"
 	"testing"
 	"time"
 
@@ -123,10 +122,10 @@ func TestMain(m *testing.M) {
 
 	log.Println(`tarantool`)
 	{
-		taran = &Tt.Adapter{Connection: connectTarantool(), Reconnect: connectTarantool}
-		_ = os.Chdir(`./mTest`)
+		taran = &Tt.Adapter{Connection: mTest.ConnectTarantool(), Reconnect: mTest.ConnectTarantool}
+		_, err = taran.Ping()
+		L.PanicIf(err, `taran.Ping`)
 		mTest.Migrate(taran)
-		_ = os.Chdir(`..`)
 	}
 
 	log.Println(`start test`)

@@ -2,7 +2,7 @@ package mTest
 
 import (
 	"github.com/kokizzu/gotro/A"
-	"github.com/kokizzu/gotro/D/Tt"
+	. "github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/X"
 )
 
@@ -32,28 +32,24 @@ func (u *TestTable2) FromArray(a A.X) *TestTable2 { //nolint:dupl false positive
 
 func (u *TestTable2) ToMapFromSlice(row []any) map[string]any {
 	return map[string]any{
-		Tt.IdCol:  row[0],
+		IdCol:     row[0],
 		`content`: row[1],
 	}
 }
 
 const TableTestTable2 = `test_table2`
 
-var Tables = map[Tt.TableName]*Tt.TableProp{
+var Tables = map[TableName]*TableProp{
 	// can only adding fields on back, and must IsNullable: true
 	// primary key must be first field and set to Unique: fieldName
 	TableTestTable2: {
-		Fields: []Tt.Field{
-			{Tt.IdCol, Tt.Unsigned},
-			{`content`, Tt.String},
+		Fields: []Field{
+			{IdCol, Unsigned},
+			{`content`, String},
 		},
 		Unique1:         `content`,
 		AutoIncrementId: true,
-		Engine:          Tt.Vinyl,
+		Engine:          Vinyl,
 	},
 	// to be fair, not making an index on "content"
-}
-
-func Migrate(taran *Tt.Adapter) {
-	taran.MigrateTables(Tables)
 }

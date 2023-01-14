@@ -1,10 +1,8 @@
 
-# Gorm vs Korm vs Tarantool
+# Gorm+Korm (Sqlite, PostgreSQL, ) vs Tarantool
 
 ```shell
 ./clean-start.sh
-cd mTest
-go test -bench=. -benchmem .
 go test -bench=Korm -benchmem .
 go test -bench=Gorm -benchmem .
 go test -bench=Taran -benchmem .
@@ -55,12 +53,12 @@ BenchmarkGetAllM_Sqlite_Gorm-32            10000            431210 ns/op        
 BenchmarkGetRowS_Sqlite_Gorm-32            70897             16205 ns/op            4183 B/op         92 allocs/op
 BenchmarkGetRowM_Sqlite_Gorm-32            72108             16634 ns/op            4817 B/op        110 allocs/op
 
-BenchmarkInsertS_Taran_ORM-32              10000             48616 ns/op            0.49 s
-BenchmarkGetAllS_Taran_Raw-32                157           7534303 ns/op         1722207 B/op      59754 allocs/op
-BenchmarkGetAllM_Taran_Raw-32                154           7901633 ns/op         4842203 B/op      69755 allocs/op
-BenchmarkGetRowS_Taran_Raw-32             138106              8784 ns/op            2428 B/op         51 allocs/op
-BenchmarkGetRowM_Taran_Raw-32             127528              8569 ns/op            2426 B/op         51 allocs/op
-BenchmarkGetRowS_Taran_ORM-32             306958              3850 ns/op            1057 B/op         24 allocs/op
+BenchmarkInsertS_Taran_ORM-32              10000             29680 ns/op              0.30 s
+BenchmarkGetAllS_Taran_Raw-32                156           7687067 ns/op         1446471 B/op      59736 allocs/op
+BenchmarkGetAllM_Taran_Raw-32                156           7777074 ns/op         4566475 B/op      69736 allocs/op
+BenchmarkGetRowS_Taran_Raw-32             161505              7447 ns/op            2425 B/op         51 allocs/op
+BenchmarkGetRowM_Taran_Raw-32             160676              7275 ns/op            2425 B/op         51 allocs/op
+BenchmarkGetRowS_Taran_ORM-32             298116              3726 ns/op            1057 B/op         24 allocs/op
 ```
 
 Note:
