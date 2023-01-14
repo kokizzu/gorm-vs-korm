@@ -84,7 +84,7 @@ Update_Postgres_Pgx-32      200000    50967 ns/op  10.19 s
 Update_Taran_ORM-32         200000      221 ns/op   0.04 s -- fastest
 
 GetAllM_Cockroach_Korm-32     8346   132151 ns/op   417864 B/op  5972 allocs/op
-GetAllM_Postgres_Korm-32     12662    93979 ns/op   391546 B/op  5716 allocs/op
+GetAllM_Postgres_Korm-32     12662    93979 ns/op   391546 B/op  5716 allocs/op -- fastest
 GetAllM_Taran_Raw-32          1640   742542 ns/op  1248536 B/op  6731 allocs/op
 
 GetAllS_Cockroach_Korm-32     5997   200701 ns/op   167815 B/op  7999 allocs/op
