@@ -71,9 +71,9 @@ GetAllM_Postgres_Korm-32     10000   117168 ns/op   391829 B/op  5729 allocs/op
 GetAllM_Taran_Raw-32          1640   742542 ns/op  1248536 B/op  6731 allocs/op
 
 GetAllS_Cockroach_Korm-32     4272   244311 ns/op   167806 B/op  7998 allocs/op
-GetAllS_Cockroach_Pgx-32     17805    67558 ns/op    34493 B/op  1951 allocs/op
+GetAllS_Cockroach_Pgx-32     16476    73736 ns/op    58497 B/op  2951 allocs/op
 GetAllS_Postgres_Korm-32      6567   185029 ns/op   165941 B/op  7764 allocs/op
-GetAllS_Postgres_Pgx-32      45964    26192 ns/op    34505 B/op  1965 allocs/op
+GetAllS_Postgres_Pgx-32      40404    30255 ns/op    58503 B/op  2967 allocs/op
 GetAllS_Taran_ORM-32          4180   291447 ns/op   233928 B/op  4714 allocs/op
 GetAllS_Taran_Raw-32          1689   734751 ns/op   936548 B/op  5731 allocs/op
 

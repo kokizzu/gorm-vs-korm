@@ -45,11 +45,14 @@ func BenchmarkGetAllS_Postgres_Pgx(b *testing.B) {
 			rows, err := pgxPostgres.Query(ctx, `SELECT * FROM `+pgxTableName+` LIMIT $1`, limit)
 			assert.Nil(b, err)
 			defer rows.Close()
-			var row PgxTestTable
+			res := make([]PgxTestTable, 0, limit)
 			for rows.Next() {
+				var row PgxTestTable
 				err = rows.Scan(&row.Id, &row.Content)
 				assert.Nil(b, err)
+				res = append(res, row)
 			}
+			assert.Equal(b, len(res), limit)
 		})
 	}
 	p.Wait()
