@@ -1,0 +1,108 @@
+package gorm_vs_korm
+
+import (
+	"sync"
+	"testing"
+
+	"github.com/kokizzu/gotro/S"
+	"github.com/sourcegraph/conc/pool"
+	"github.com/zeebo/assert"
+	"gorm.io/gorm"
+)
+
+var gormSqlite *gorm.DB
+
+func BenchmarkInsertS_Sqlite_Gorm(b *testing.B) {
+	if done() {
+		b.SkipNow()
+		return
+	}
+	defer timing()()
+	err := gormSqlite.Exec(`DELETE FROM ` + gormTestTableName).Error
+	assert.Nil(b, err)
+	b.ReportAllocs()
+	b.ResetTimer()
+	b.N = total
+
+	// super slow without mutex
+	// SLOW SQL >= 200ms [1231.366ms]
+	// gorm_sqlite_test.go:33: sqlite3.Error{Code:5, ExtendedCode:5, SystemErrno:0x0, err:"database is locked"} cannot be nil
+	m := sync.Mutex{}
+
+	p := pool.New().WithMaxGoroutines(cores)
+	for z := uint64(1); z <= total; z++ {
+		z := z
+		p.Go(func() {
+			m.Lock()
+			defer m.Unlock()
+			err := gormSqlite.Create(&GormTestTable{
+				ID:      z,
+				Content: S.EncodeCB63(z, 0),
+			}).Error
+			assert.Nil(b, err)
+		})
+	}
+	p.Wait()
+}
+
+func BenchmarkGetAllS_Sqlite_Gorm(b *testing.B) {
+	b.ReportAllocs()
+	b.ResetTimer()
+	p := pool.New().WithMaxGoroutines(cores)
+	for i := uint64(1); i <= uint64(b.N); i++ {
+		p.Go(func() {
+			a := []GormTestTable{}
+			err := gormSqlite.Find(&a).Error
+			assert.Nil(b, err)
+		})
+	}
+	p.Wait()
+}
+
+func BenchmarkGetAllM_Sqlite_Gorm(b *testing.B) {
+	a := []map[string]any{}
+	b.ReportAllocs()
+	b.ResetTimer()
+	p := pool.New().WithMaxGoroutines(cores)
+	for i := uint64(1); i <= uint64(b.N); i++ {
+		p.Go(func() {
+			err := gormSqlite.Find(&GormTestTable{}).Scan(&a).Error
+			assert.Nil(b, err)
+		})
+	}
+	p.Wait()
+}
+
+func BenchmarkGetRowS_Sqlite_Gorm(b *testing.B) {
+	b.ReportAllocs()
+	b.ResetTimer()
+	p := pool.New().WithMaxGoroutines(cores)
+	for i := uint64(1); i <= uint64(b.N); i++ {
+		i := i
+		p.Go(func() {
+			u := GormTestTable{}
+			err := gormSqlite.Where(&GormTestTable{
+				Content: S.EncodeCB63(1+uint64(i)%total, 0),
+			}).First(&u).Error
+			assert.Nil(b, err)
+		})
+	}
+	p.Wait()
+}
+
+func BenchmarkGetRowM_Sqlite_Gorm(b *testing.B) {
+	b.ReportAllocs()
+	b.ResetTimer()
+	p := pool.New().WithMaxGoroutines(cores)
+	for i := uint64(1); i <= uint64(b.N); i++ {
+		i := i
+		p.Go(func() {
+			u := map[string]any{}
+			err := gormSqlite.Model(&GormTestTable{}).Where(&GormTestTable{
+				Content: S.EncodeCB63(1+uint64(i)%total, 0),
+			}).First(&u).Error
+			assert.Nil(b, err)
+		})
+	}
+	p.Wait()
+}

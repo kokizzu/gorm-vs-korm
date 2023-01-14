@@ -54,6 +54,23 @@ func (t *TestTable2) FindById() bool { //nolint:dupl false positive
 	return false
 }
 
+func (t *TestTable2) UniqueIndexContent() string { //nolint:dupl false positive
+	return `content`
+}
+
+func (t *TestTable2) FindByContent() bool { //nolint:dupl false positive
+	res, err := t.Adapter.Select(t.SpaceName(), t.UniqueIndexContent(), 0, 1, tarantool.IterEq, A.X{t.Content})
+	if L.IsError(err, `TestTable2.FindByContent failed: `+t.SpaceName()) {
+		return false
+	}
+	rows := res.Tuples()
+	if len(rows) == 1 {
+		t.FromArray(rows[0])
+		return true
+	}
+	return false
+}
+
 func (t *TestTable2) sqlSelectAllFields() string { //nolint:dupl false positive
 	return ` "id"
 	, "content"

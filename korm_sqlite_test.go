@@ -1,0 +1,104 @@
+package gorm_vs_korm
+
+import (
+	"sync"
+	"testing"
+
+	"github.com/kamalshkeir/korm"
+	"github.com/kokizzu/gotro/S"
+	"github.com/sourcegraph/conc/pool"
+	"github.com/zeebo/assert"
+)
+
+func BenchmarkInsertS_Sqlite_Korm(b *testing.B) {
+	if done() {
+		b.SkipNow()
+		return
+	}
+	defer timing()()
+	defer timing()()
+	b.ReportAllocs()
+	b.ResetTimer()
+	b.N = total
+	err := korm.Exec(kormSqliteDbName, `DELETE FROM `+kormTableName)
+	assert.Nil(b, err)
+
+	// sqlite doesn't can't have concurrent write
+	// &sqlite.Error{msg:"database is locked (5) (SQLITE_BUSY)", code:5} != nil
+	m := sync.Mutex{}
+
+	p := pool.New().WithMaxGoroutines(cores)
+	for z := uint64(1); z <= total; z++ {
+		z := z
+		p.Go(func() {
+			m.Lock()
+			defer m.Unlock()
+			_, err := korm.Model[KormTestTable]().Database(kormSqliteDbName).Insert(&KormTestTable{
+				Id:      z,
+				Content: S.EncodeCB63(z, 0),
+			})
+			assert.Nil(b, err)
+		})
+	}
+	p.Wait()
+}
+
+func BenchmarkGetAllS_Sqlite_Korm(b *testing.B) {
+	b.ReportAllocs()
+	b.ResetTimer()
+	p := pool.New().WithMaxGoroutines(cores)
+	for i := uint64(1); i <= uint64(b.N); i++ {
+		p.Go(func() {
+			_, err := korm.Model[KormTestTable]().Database(kormSqliteDbName).All()
+			assert.Nil(b, err)
+		})
+	}
+	p.Wait()
+}
+
+func BenchmarkGetAllM_Sqlite_Korm(b *testing.B) {
+	b.ReportAllocs()
+	b.ResetTimer()
+	p := pool.New().WithMaxGoroutines(cores)
+	for i := uint64(1); i <= uint64(b.N); i++ {
+		p.Go(func() {
+			_, err := korm.Table(kormTableName).Database(kormSqliteDbName).All()
+			if err != nil {
+				b.Error("error BenchmarkGetAllM:", err)
+			}
+		})
+	}
+	p.Wait()
+}
+
+func BenchmarkGetRowS_Sqlite_Korm(b *testing.B) {
+	b.ReportAllocs()
+	b.ResetTimer()
+	p := pool.New().WithMaxGoroutines(cores)
+	for i := uint64(1); i <= uint64(b.N); i++ {
+		i := i
+		p.Go(func() {
+			_, err := korm.Model[KormTestTable]().Where("content = ?",
+				S.EncodeCB63(1+uint64(i)%total, 0),
+			).Database(kormSqliteDbName).One()
+			assert.Nil(b, err)
+		})
+	}
+	p.Wait()
+}
+
+func BenchmarkGetRowM_Sqlite_Korm(b *testing.B) {
+	b.ReportAllocs()
+	b.ResetTimer()
+	p := pool.New().WithMaxGoroutines(cores)
+	for i := uint64(1); i <= uint64(b.N); i++ {
+		i := i
+		p.Go(func() {
+			_, err := korm.Table(kormTableName).Database(kormSqliteDbName).Where("content = ?",
+				S.EncodeCB63(1+uint64(i)%total, 0),
+			).One()
+			assert.Nil(b, err)
+		})
+	}
+	p.Wait()
+}

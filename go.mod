@@ -3,12 +3,14 @@ module korm1
 go 1.19
 
 require (
-	github.com/kamalshkeir/klog v1.0.0
 	github.com/kamalshkeir/korm v1.3.8
+	github.com/kamalshkeir/pgdriver v1.0.0
 	github.com/kamalshkeir/sqlitedriver v1.0.0
 	github.com/kokizzu/gotro v1.2512.122
 	github.com/sourcegraph/conc v0.1.0
 	github.com/tarantool/go-tarantool v1.8.0
+	github.com/zeebo/assert v1.3.0
+	gorm.io/driver/postgres v1.4.6
 	gorm.io/driver/sqlite v1.4.4
 	gorm.io/gorm v1.24.3
 )
@@ -37,12 +39,16 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
+	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
+	github.com/jackc/pgx/v5 v5.2.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jxskiss/base62 v1.1.0 // indirect
 	github.com/kamalshkeir/aes v1.0.0 // indirect
 	github.com/kamalshkeir/argon v1.0.0 // indirect
 	github.com/kamalshkeir/kinput v0.1.0 // indirect
+	github.com/kamalshkeir/klog v1.0.0 // indirect
 	github.com/kamalshkeir/kmap v1.0.4 // indirect
 	github.com/kamalshkeir/kmux v1.6.3 // indirect
 	github.com/kamalshkeir/ksbus v0.8.3 // indirect
@@ -53,6 +59,7 @@ require (
 	github.com/kpango/fastime v1.1.6 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/lib/pq v1.10.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mattn/go-pointer v0.0.1 // indirect

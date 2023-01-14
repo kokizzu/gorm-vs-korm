@@ -58,6 +58,26 @@ func (t *TestTable2Mutator) DoDeletePermanentById() bool { //nolint:dupl false p
 //	return !L.IsError(err, `TestTable2.DoUpsert failed: `+t.SpaceName())
 // }
 
+// Overwrite all columns, error if not exists
+func (t *TestTable2Mutator) DoOverwriteByContent() bool { //nolint:dupl false positive
+	_, err := t.Adapter.Update(t.SpaceName(), t.UniqueIndexContent(), A.X{t.Content}, t.ToUpdateArray())
+	return !L.IsError(err, `TestTable2.DoOverwriteByContent failed: `+t.SpaceName())
+}
+
+// Update only mutated, error if not exists, use Find* and Set* methods instead of direct assignment
+func (t *TestTable2Mutator) DoUpdateByContent() bool { //nolint:dupl false positive
+	if !t.HaveMutation() {
+		return true
+	}
+	_, err := t.Adapter.Update(t.SpaceName(), t.UniqueIndexContent(), A.X{t.Content}, t.mutations)
+	return !L.IsError(err, `TestTable2.DoUpdateByContent failed: `+t.SpaceName())
+}
+
+func (t *TestTable2Mutator) DoDeletePermanentByContent() bool { //nolint:dupl false positive
+	_, err := t.Adapter.Delete(t.SpaceName(), t.UniqueIndexContent(), A.X{t.Content})
+	return !L.IsError(err, `TestTable2.DoDeletePermanentByContent failed: `+t.SpaceName())
+}
+
 // insert, error if exists
 func (t *TestTable2Mutator) DoInsert() bool { //nolint:dupl false positive
 	row, err := t.Adapter.Insert(t.SpaceName(), t.ToArray())
