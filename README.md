@@ -63,13 +63,17 @@ Gorm = too many errors, connection reset by peer
 InsertS_Cockroach_Korm-32   100000   451436 ns/op      45.14 s
 InsertS_Postgres_Korm-32    100000   172047 ns/op      17.20 s
 InsertS_Taran_ORM-32        100000    36685 ns/op       3.67 s
+Insert_Cockroach_Pgx-32     100000    99197 ns/op       9.92 s
+Insert_Postgres_Pgx-32      100000    56311 ns/op       5.63 s
 
 GetAllM_Cockroach_Korm-32     5757   191306 ns/op   418047 B/op  5973 allocs/op
 GetAllM_Postgres_Korm-32     10000   117168 ns/op   391829 B/op  5729 allocs/op
 GetAllM_Taran_Raw-32          1640   742542 ns/op  1248536 B/op  6731 allocs/op
 
 GetAllS_Cockroach_Korm-32     4272   244311 ns/op   167806 B/op  7998 allocs/op
+GetAllS_Cockroach_Pgx-32     17805    67558 ns/op    34493 B/op  1951 allocs/op
 GetAllS_Postgres_Korm-32      6567   185029 ns/op   165941 B/op  7764 allocs/op
+GetAllS_Postgres_Pgx-32      45964    26192 ns/op    34505 B/op  1965 allocs/op
 GetAllS_Taran_ORM-32          4180   291447 ns/op   233928 B/op  4714 allocs/op
 GetAllS_Taran_Raw-32          1689   734751 ns/op   936548 B/op  5731 allocs/op
 
@@ -80,7 +84,9 @@ GetRowM_Postgres_Korm-32     68497    16393 ns/op     1696 B/op    43 allocs/op
 GetRowM_Taran_Raw-32        130099     8951 ns/op     2498 B/op    55 allocs/op
 
 GetRowS_Cockroach_Korm-32     9468   153688 ns/op     2684 B/op    71 allocs/op
+GetRowS_Cockroach_Pgx-32     78200    14916 ns/op      621 B/op    15 allocs/op
 GetRowS_Postgres_Korm-32     10000   128368 ns/op     2682 B/op    71 allocs/op
+GetRowS_Postgres_Pgx-32     226089     5308 ns/op      619 B/op    15 allocs/op
 GetRowS_Taran_ORM-32        297463     3724 ns/op     1058 B/op    24 allocs/op
 GetRowS_Taran_Raw-32        113793    10017 ns/op     2509 B/op    56 allocs/op
 ```

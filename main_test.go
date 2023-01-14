@@ -1,11 +1,13 @@
 package gorm_vs_korm
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"testing"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/kamalshkeir/korm"
 	_ "github.com/kamalshkeir/pgdriver"
 	"github.com/kokizzu/gotro/D/Tt"
@@ -47,6 +49,26 @@ type KormTestTable struct {
 	Id      uint64 `korm:"pk"`
 	Content string `korm:"unique"`
 }
+
+// pgx
+
+const pgxPostgresConnStr = `postgres://` + kormPostgresConnStr
+const pgxCockroachConnStr = `postgres://` + kormCockroachConnStr
+
+type PgxTestTable struct {
+	Id      uint64
+	Content string
+}
+
+const pgxTableName = `test_table3`
+
+const pgxMigrateSql = `
+CREATE TABLE IF NOT EXISTS test_table3 (
+	id BIGINT NOT NULL,
+	content TEXT NOT NULL,
+	CONSTRAINT test_table3_pkey PRIMARY KEY (id),
+	UNIQUE(content)
+);`
 
 func TestMain(m *testing.M) {
 	var err error
@@ -90,6 +112,14 @@ func TestMain(m *testing.M) {
 			err = korm.AutoMigrate[KormTestTable](kormTableName, kormPostgresDbName)
 			L.PanicIf(err, `korm.AutoMigrate`)
 		}
+
+		log.Println(`pgx`)
+		{
+			pgxPostgres, err = pgxpool.New(context.Background(), pgxPostgresConnStr)
+			L.PanicIf(err, `pgx.Connect`)
+			_, err = pgxPostgres.Exec(context.Background(), pgxMigrateSql)
+			L.PanicIf(err, `pgx.Exec`)
+		}
 	}
 
 	log.Println(`cockroach`)
@@ -108,6 +138,14 @@ func TestMain(m *testing.M) {
 			L.PanicIf(err, `korm.New`)
 			err = korm.AutoMigrate[KormTestTable](kormTableName, kormCockroachDbName)
 			L.PanicIf(err, `korm.AutoMigrate`)
+		}
+
+		log.Println(`pgx`)
+		{
+			pgxCockroach, err = pgxpool.New(context.Background(), pgxCockroachConnStr)
+			L.PanicIf(err, `pgx.Connect`)
+			_, err = pgxCockroach.Exec(context.Background(), pgxMigrateSql)
+			L.PanicIf(err, `pgx.Exec`)
 		}
 	}
 
