@@ -27,6 +27,7 @@ func BenchmarkInsertS_Taran_ORM(b *testing.B) {
 	defer timing()()
 	b.ReportAllocs()
 	b.ResetTimer()
+	b.N = total
 	r := taran.ExecSql(`DELETE FROM ` + S.ZZ(mTest.TableTestTable2))
 	assert.Equal(b, len(r), 1)
 

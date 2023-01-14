@@ -10,8 +10,6 @@ import (
 	_ "github.com/kamalshkeir/pgdriver"
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/L"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 
 	"korm1/mTest"
 )
@@ -77,13 +75,13 @@ func TestMain(m *testing.M) {
 
 	log.Println(`postgres`)
 	{
-		log.Println(`gorm`)
-		{
-			gormPostgres, err = gorm.Open(postgres.Open(gormPostgresConnStr))
-			L.PanicIf(err, `gorm.Open`)
-			err = gormPostgres.AutoMigrate(&GormTestTable{})
-			L.PanicIf(err, `gormPostgres.AutoMigrate`)
-		}
+		//log.Println(`gorm`)
+		//{
+		//	gormPostgres, err = gorm.Open(postgres.Open(gormPostgresConnStr))
+		//	L.PanicIf(err, `gorm.Open`)
+		//	err = gormPostgres.AutoMigrate(&GormTestTable{})
+		//	L.PanicIf(err, `gormPostgres.AutoMigrate`)
+		//}
 
 		log.Println(`korm`)
 		{
@@ -125,6 +123,8 @@ func TestMain(m *testing.M) {
 		_, err = taran.Ping()
 		L.PanicIf(err, `taran.Ping`)
 		mTest.Migrate(taran)
+		// need reconnect if there's new index
+		taran.Connection = taran.Reconnect()
 	}
 
 	log.Println(`start test`)
