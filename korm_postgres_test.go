@@ -15,8 +15,6 @@ func BenchmarkInsertS_Postgres_Korm(b *testing.B) {
 		return
 	}
 	defer timing()()
-	b.ReportAllocs()
-	b.ResetTimer()
 	b.N = total
 	err := korm.Exec(kormPostgresDbName, `TRUNCATE TABLE `+kormTableName)
 	assert.Nil(b, err)
@@ -34,9 +32,36 @@ func BenchmarkInsertS_Postgres_Korm(b *testing.B) {
 	p.Wait()
 }
 
+//func BenchmarkUpdate_Postgres_Korm(b *testing.B) {
+//	if done() {
+//		b.SkipNow()
+//		return
+//	}
+//	defer timing()(2)
+//	b.N = total
+//	p := pool.New().WithMaxGoroutines(cores)
+//	for z := uint64(1); z <= total; z++ {
+//		z := z
+//		p.Go(func() {
+//			_, err := korm.Model[KormTestTable]().Database(kormPostgresDbName).
+//				Where("id = ?", z).
+//				Set(
+//					`content = ?`, S.EncodeCB63(total+z, 0),
+//				)
+//			assert.Nil(b, err)
+//			_, err = korm.Model[KormTestTable]().Database(kormPostgresDbName).
+//				Where("id = ?", z).
+//				Set(
+//					`content = ?`, S.EncodeCB63(z, 0),
+//				)
+//			assert.Nil(b, err)
+//		})
+//	}
+//	b.N *= 2
+//	p.Wait()
+//}
+
 func BenchmarkGetAllS_Postgres_Korm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
@@ -48,8 +73,6 @@ func BenchmarkGetAllS_Postgres_Korm(b *testing.B) {
 }
 
 func BenchmarkGetAllM_Postgres_Korm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
@@ -63,8 +86,6 @@ func BenchmarkGetAllM_Postgres_Korm(b *testing.B) {
 }
 
 func BenchmarkGetRowS_Postgres_Korm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		i := i
@@ -79,8 +100,6 @@ func BenchmarkGetRowS_Postgres_Korm(b *testing.B) {
 }
 
 func BenchmarkGetRowM_Postgres_Korm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		i := i

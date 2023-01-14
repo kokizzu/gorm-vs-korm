@@ -6,6 +6,7 @@
 go test -bench=Korm -benchmem .
 go test -bench=Gorm -benchmem .
 go test -bench=Taran -benchmem .
+go test -bench=Pgx -benchmem .
 
 goos: linux
 goarch: amd64
@@ -59,21 +60,26 @@ GetRowS_Taran_Raw-32       161505      7447 ns/op     2425 B/op         51 alloc
 
 SQLite = too slow
 Gorm = too many errors, connection reset by peer
+Korm = failed update tests
 
-InsertS_Cockroach_Korm-32   100000   451436 ns/op      45.14 s
-InsertS_Postgres_Korm-32    100000   172047 ns/op      17.20 s
-InsertS_Taran_ORM-32        100000    36685 ns/op       3.67 s
-Insert_Cockroach_Pgx-32     100000    99197 ns/op       9.92 s
-Insert_Postgres_Pgx-32      100000    56311 ns/op       5.63 s
+InsertS_Cockroach_Korm-32   100000   451436 ns/op  45.14 s
+Insert_Cockroach_Pgx-32     100000    99197 ns/op   9.92 s
+InsertS_Postgres_Korm-32    100000   172047 ns/op  17.20 s
+Insert_Postgres_Pgx-32      100000    56311 ns/op   5.63 s
+InsertS_Taran_ORM-32        100000    36685 ns/op   3.67 s -- fastest
+
+Update_Cockroach_Pgx-32     200000   248171 ns/op  49.63 s
+Update_Postgres_Pgx-32      200000    50967 ns/op  10.19 s
+Update_Taran_ORM-32         200000      221 ns/op   0.04 s -- fastest
 
 GetAllM_Cockroach_Korm-32     5757   191306 ns/op   418047 B/op  5973 allocs/op
-GetAllM_Postgres_Korm-32     10000   117168 ns/op   391829 B/op  5729 allocs/op
+GetAllM_Postgres_Korm-32     10000   117168 ns/op   391829 B/op  5729 allocs/op -- fastest
 GetAllM_Taran_Raw-32          1640   742542 ns/op  1248536 B/op  6731 allocs/op
 
 GetAllS_Cockroach_Korm-32     4272   244311 ns/op   167806 B/op  7998 allocs/op
 GetAllS_Cockroach_Pgx-32     16476    73736 ns/op    58497 B/op  2951 allocs/op
 GetAllS_Postgres_Korm-32      6567   185029 ns/op   165941 B/op  7764 allocs/op
-GetAllS_Postgres_Pgx-32      40404    30255 ns/op    58503 B/op  2967 allocs/op
+GetAllS_Postgres_Pgx-32      40404    30255 ns/op    58503 B/op  2967 allocs/op -- fastest
 GetAllS_Taran_ORM-32          4180   291447 ns/op   233928 B/op  4714 allocs/op
 GetAllS_Taran_Raw-32          1689   734751 ns/op   936548 B/op  5731 allocs/op
 
@@ -81,17 +87,21 @@ GetAllA_Taran_ORM-32          4146   286855 ns/op   157546 B/op  4703 allocs/op
 
 GetRowM_Cockroach_Korm-32    32676    36936 ns/op     1697 B/op    43 allocs/op
 GetRowM_Postgres_Korm-32     68497    16393 ns/op     1696 B/op    43 allocs/op
-GetRowM_Taran_Raw-32        130099     8951 ns/op     2498 B/op    55 allocs/op
+GetRowM_Taran_Raw-32        130099     8951 ns/op     2498 B/op    55 allocs/op -- fastest
 
 GetRowS_Cockroach_Korm-32     9468   153688 ns/op     2684 B/op    71 allocs/op
 GetRowS_Cockroach_Pgx-32     78200    14916 ns/op      621 B/op    15 allocs/op
 GetRowS_Postgres_Korm-32     10000   128368 ns/op     2682 B/op    71 allocs/op
 GetRowS_Postgres_Pgx-32     226089     5308 ns/op      619 B/op    15 allocs/op
-GetRowS_Taran_ORM-32        297463     3724 ns/op     1058 B/op    24 allocs/op
-GetRowS_Taran_Raw-32        113793    10017 ns/op     2509 B/op    56 allocs/op
+GetRowS_Taran_ORM-32        297463     3724 ns/op     1058 B/op    24 allocs/op -- fastest
+GetRowS_Taran_Raw-32        113793    10017 ns/op     2509 B/op    56 allocs/op 
 ```
 
 Note:
 - disabled cache for KORM
 - tarantool not using ORM nor faster API, just raw sql query
 - tarantool 10x less rps when only 1 core utilized (without conc)
+
+## Conclusion
+
+Tarantool fastest for insert, update, get single row use-case, postgres with pgx fastest for get multi-row use-case.

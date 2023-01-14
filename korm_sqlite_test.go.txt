@@ -17,8 +17,6 @@ func BenchmarkInsertS_Sqlite_Korm(b *testing.B) {
 	}
 	defer timing()()
 	defer timing()()
-	b.ReportAllocs()
-	b.ResetTimer()
 	b.N = total
 	err := korm.Exec(kormSqliteDbName, `DELETE FROM `+kormTableName)
 	assert.Nil(b, err)
@@ -44,8 +42,6 @@ func BenchmarkInsertS_Sqlite_Korm(b *testing.B) {
 }
 
 func BenchmarkGetAllS_Sqlite_Korm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
@@ -57,8 +53,6 @@ func BenchmarkGetAllS_Sqlite_Korm(b *testing.B) {
 }
 
 func BenchmarkGetAllM_Sqlite_Korm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
@@ -72,8 +66,6 @@ func BenchmarkGetAllM_Sqlite_Korm(b *testing.B) {
 }
 
 func BenchmarkGetRowS_Sqlite_Korm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		i := i
@@ -88,8 +80,6 @@ func BenchmarkGetRowS_Sqlite_Korm(b *testing.B) {
 }
 
 func BenchmarkGetRowM_Sqlite_Korm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		i := i

@@ -18,8 +18,6 @@ func BenchmarkInsert_Cockroach_Pgx(b *testing.B) {
 		return
 	}
 	defer timing()()
-	b.ReportAllocs()
-	b.ResetTimer()
 	b.N = total
 	ctx := context.Background()
 	_, err := pgxCockroach.Exec(ctx, `TRUNCATE TABLE `+pgxTableName)
@@ -35,9 +33,29 @@ func BenchmarkInsert_Cockroach_Pgx(b *testing.B) {
 	p.Wait()
 }
 
+func BenchmarkUpdate_Cockroach_Pgx(b *testing.B) {
+	if done() {
+		b.SkipNow()
+		return
+	}
+	defer timing()(2)
+	b.N = total
+	ctx := context.Background()
+	p := pool.New().WithMaxGoroutines(cores)
+	for z := uint64(1); z <= total; z++ {
+		z := z
+		p.Go(func() {
+			_, err := pgxCockroach.Exec(ctx, `UPDATE `+pgxTableName+` SET content = $2 WHERE id = $1`, z, S.EncodeCB63(total+z, 0))
+			assert.Nil(b, err)
+			_, err = pgxCockroach.Exec(ctx, `UPDATE `+pgxTableName+` SET content = $2 WHERE id = $1`, z, S.EncodeCB63(z, 0))
+			assert.Nil(b, err)
+		})
+	}
+	b.N *= 2
+	p.Wait()
+}
+
 func BenchmarkGetAllS_Cockroach_Pgx(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	ctx := context.Background()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
@@ -59,8 +77,6 @@ func BenchmarkGetAllS_Cockroach_Pgx(b *testing.B) {
 }
 
 func BenchmarkGetRowS_Cockroach_Pgx(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	ctx := context.Background()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {

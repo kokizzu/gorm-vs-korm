@@ -20,8 +20,6 @@ func BenchmarkInsertS_Sqlite_Gorm(b *testing.B) {
 	defer timing()()
 	err := gormSqlite.Exec(`DELETE FROM ` + gormTestTableName).Error
 	assert.Nil(b, err)
-	b.ReportAllocs()
-	b.ResetTimer()
 	b.N = total
 
 	// super slow without mutex
@@ -46,8 +44,6 @@ func BenchmarkInsertS_Sqlite_Gorm(b *testing.B) {
 }
 
 func BenchmarkGetAllS_Sqlite_Gorm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
@@ -61,8 +57,6 @@ func BenchmarkGetAllS_Sqlite_Gorm(b *testing.B) {
 
 func BenchmarkGetAllM_Sqlite_Gorm(b *testing.B) {
 	a := []map[string]any{}
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
@@ -74,8 +68,6 @@ func BenchmarkGetAllM_Sqlite_Gorm(b *testing.B) {
 }
 
 func BenchmarkGetRowS_Sqlite_Gorm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		i := i
@@ -91,8 +83,6 @@ func BenchmarkGetRowS_Sqlite_Gorm(b *testing.B) {
 }
 
 func BenchmarkGetRowM_Sqlite_Gorm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		i := i

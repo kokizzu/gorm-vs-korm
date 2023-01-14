@@ -171,7 +171,7 @@ var runOnce = map[string]bool{}
 
 func done() bool {
 	caller := L.CallerInfo(2).FuncName
-	log.Println(caller)
+	//log.Println(caller)
 	if runOnce[caller] {
 		return true
 	}
@@ -181,15 +181,19 @@ func done() bool {
 
 var timer = map[string]time.Time{}
 
-func timing() func() {
+func timing() func(...int64) {
 	start := time.Now()
-	return func() {
+	return func(v ...int64) {
 		dur := time.Since(start)
+		divisor := int64(total)
+		if len(v) == 1 {
+			divisor *= v[0]
+		}
 		// BenchmarkInsertS_Taran_ORM-32              10000             48616 ns/op            0.49 s
 		fmt.Printf(`%-36s %11d %17d ns/op   %15.2f s`+"\n",
 			fmt.Sprintf("%s-%d", L.CallerInfo(2).FuncName, cores),
-			total,
-			dur.Nanoseconds()/int64(total),
+			divisor,
+			dur.Nanoseconds()/divisor,
 			dur.Seconds(),
 		)
 	}

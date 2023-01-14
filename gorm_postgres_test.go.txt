@@ -19,8 +19,6 @@ func BenchmarkInsertS_Postgres_Gorm(b *testing.B) {
 	defer timing()()
 	err := gormPostgres.Exec(`TRUNCATE TABLE ` + gormTestTableName).Error
 	assert.Nil(b, err)
-	b.ReportAllocs()
-	b.ResetTimer()
 	b.N = total
 	p := pool.New().WithMaxGoroutines(cores)
 	for z := uint64(1); z <= total; z++ {
@@ -37,8 +35,6 @@ func BenchmarkInsertS_Postgres_Gorm(b *testing.B) {
 }
 
 func BenchmarkGetAllS_Postgres_Gorm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
@@ -52,8 +48,6 @@ func BenchmarkGetAllS_Postgres_Gorm(b *testing.B) {
 
 func BenchmarkGetAllM_Postgres_Gorm(b *testing.B) {
 	a := []map[string]any{}
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
@@ -65,8 +59,6 @@ func BenchmarkGetAllM_Postgres_Gorm(b *testing.B) {
 }
 
 func BenchmarkGetRowS_Postgres_Gorm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		i := i
@@ -82,8 +74,6 @@ func BenchmarkGetRowS_Postgres_Gorm(b *testing.B) {
 }
 
 func BenchmarkGetRowM_Postgres_Gorm(b *testing.B) {
-	b.ReportAllocs()
-	b.ResetTimer()
 	p := pool.New().WithMaxGoroutines(cores)
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		i := i
