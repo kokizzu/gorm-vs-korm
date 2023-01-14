@@ -15,7 +15,7 @@ import (
 )
 
 const total = 100000
-const limit = 1000
+const limit = 1000 // if changed, change also limit1k in tarantool_test.go
 const cores = 32
 
 // connection strings
@@ -123,8 +123,6 @@ func TestMain(m *testing.M) {
 		_, err = taran.Ping()
 		L.PanicIf(err, `taran.Ping`)
 		mTest.Migrate(taran)
-		// need reconnect if there's new index
-		taran.Connection = taran.Reconnect()
 	}
 
 	log.Println(`start test`)

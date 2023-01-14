@@ -10,7 +10,9 @@ go test -bench=Taran -benchmem .
 goos: linux
 goarch: amd64
 
-10K rows, GetAll select all rows
+S = struct, M = map, A = array
+
+10K rows, GetAll select all rows, concurrency: 32
 
 InsertS_Cockroach_Gorm-32   10000    163963 ns/op       1.64 s         
 InsertS_Cockroach_Korm-32   10000    434172 ns/op       4.34 s
@@ -53,7 +55,7 @@ GetRowS_Sqlite_Korm-32     117987     12081 ns/op     2148 B/op         64 alloc
 GetRowS_Taran_ORM-32       298116      3726 ns/op     1057 B/op         24 allocs/op
 GetRowS_Taran_Raw-32       161505      7447 ns/op     2425 B/op         51 allocs/op
 
-100K rows, GetAll select 1000 rows unordered
+100K rows, GetAll select 1000 rows unordered, concurrency: 32
 
 SQLite = too slow
 Gorm = too many errors, connection reset by peer
@@ -68,7 +70,10 @@ GetAllM_Taran_Raw-32          1640   742542 ns/op  1248536 B/op  6731 allocs/op
 
 GetAllS_Cockroach_Korm-32     4272   244311 ns/op   167806 B/op  7998 allocs/op
 GetAllS_Postgres_Korm-32      6567   185029 ns/op   165941 B/op  7764 allocs/op
+GetAllS_Taran_ORM-32          4180   291447 ns/op   233928 B/op  4714 allocs/op
 GetAllS_Taran_Raw-32          1689   734751 ns/op   936548 B/op  5731 allocs/op
+
+GetAllA_Taran_ORM-32          4146   286855 ns/op   157546 B/op  4703 allocs/op
 
 GetRowM_Cockroach_Korm-32    32676    36936 ns/op     1697 B/op    43 allocs/op
 GetRowM_Postgres_Korm-32     68497    16393 ns/op     1696 B/op    43 allocs/op

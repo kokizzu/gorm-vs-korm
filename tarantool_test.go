@@ -38,7 +38,7 @@ func BenchmarkInsertS_Taran_ORM(b *testing.B) {
 			row := wcTest.NewTestTable2Mutator(taran)
 			row.Id = z
 			row.Content = S.EncodeCB63(z, 0)
-			ok := row.DoReplace()
+			ok := row.DoUpsert()
 			assert.True(b, ok)
 		})
 	}
@@ -62,7 +62,35 @@ func BenchmarkGetAllS_Taran_Raw(b *testing.B) {
 	}
 	p.Wait()
 }
+func BenchmarkGetAllS_Taran_ORM(b *testing.B) {
+	b.ReportAllocs()
+	b.ResetTimer()
 
+	p := pool.New().WithMaxGoroutines(cores)
+	for i := uint64(1); i <= uint64(b.N); i++ {
+		p.Go(func() {
+			row := rqTest.NewTestTable2(taran)
+			rows := row.FindOffsetLimit(0, limit, Tt.IdCol)
+			assert.Equal(b, len(rows), limit)
+		})
+	}
+	p.Wait()
+}
+
+func BenchmarkGetAllA_Taran_ORM(b *testing.B) {
+	b.ReportAllocs()
+	b.ResetTimer()
+
+	p := pool.New().WithMaxGoroutines(cores)
+	for i := uint64(1); i <= uint64(b.N); i++ {
+		p.Go(func() {
+			row := rqTest.NewTestTable2(taran)
+			rows, _ := row.FindArrOffsetLimit(0, limit, Tt.IdCol)
+			assert.Equal(b, len(rows), limit)
+		})
+	}
+	p.Wait()
+}
 func BenchmarkGetAllM_Taran_Raw(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
