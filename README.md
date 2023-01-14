@@ -7,7 +7,11 @@ go test -bench=Korm -benchmem .
 go test -bench=Gorm -benchmem .
 go test -bench=Taran -benchmem .
 go test -bench=Pgx -benchmem .
+```
 
+## Result 10K rows, GetAll select all rows, concurrency: 32
+
+```shell
 goos: linux
 goarch: amd64
 
@@ -17,7 +21,6 @@ goarch: amd64
 
 S = struct, M = map, A = array
 
-# 10K rows, GetAll select all rows, concurrency: 32
 ## korm 1.3.8
 ## gorm 1.24.3
 ## go-tarantool 1.10.0
@@ -62,8 +65,11 @@ GetRowS_Sqlite_Gorm-32      70897     16205 ns/op     4183 B/op         92 alloc
 GetRowS_Sqlite_Korm-32     117987     12081 ns/op     2148 B/op         64 allocs/op
 GetRowS_Taran_ORM-32       298116      3726 ns/op     1057 B/op         24 allocs/op
 GetRowS_Taran_Raw-32       161505      7447 ns/op     2425 B/op         51 allocs/op
+```
 
-# 100K rows, GetAll select 1000 rows unordered, concurrency: 32
+## Result 100K rows, GetAll select 1000 rows unordered, concurrency: 32
+
+```shell
 ## korm 1.4.1
 ## pgx 5.2.0
 ## go-tarantool 1.10.0
