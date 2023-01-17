@@ -3,7 +3,7 @@ module korm1
 go 1.19
 
 require (
-	github.com/kamalshkeir/korm v1.4.1
+	github.com/kamalshkeir/korm v1.4.3
 	github.com/kamalshkeir/pgdriver v1.0.0
 	github.com/kamalshkeir/sqlitedriver v1.0.0
 	github.com/kokizzu/gotro v1.2515.124
@@ -58,9 +58,9 @@ require (
 	github.com/kamalshkeir/argon v1.0.0 // indirect
 	github.com/kamalshkeir/kinput v0.1.0 // indirect
 	github.com/kamalshkeir/klog v1.0.0 // indirect
-	github.com/kamalshkeir/kmap v1.0.4 // indirect
+	github.com/kamalshkeir/kmap v1.1.0 // indirect
 	github.com/kamalshkeir/kmux v1.6.7 // indirect
-	github.com/kamalshkeir/ksbus v0.8.7 // indirect
+	github.com/kamalshkeir/ksbus v0.8.8 // indirect
 	github.com/kamalshkeir/kstrct v1.4.7 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/klauspost/compress v1.15.14 // indirect

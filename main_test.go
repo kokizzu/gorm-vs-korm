@@ -149,7 +149,9 @@ func TestMain(m *testing.M) {
 		}
 	}
 
-	korm.DisableCache()
+	korm.SetCacheMaxMemory(1) // to make realistic benchmark, case when database can be 10x larger than RAM
+
+	//korm.DisableCache()
 	// ^ the cheat for 2m performance
 	// caveat:
 	// - database cannot be more than half of RAM size, since the cache has no limit

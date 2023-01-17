@@ -3,6 +3,7 @@ package gorm_vs_korm
 import (
 	"testing"
 
+	"github.com/kamalshkeir/kmap"
 	"github.com/kamalshkeir/korm"
 	"github.com/kokizzu/gotro/S"
 	"github.com/sourcegraph/conc/pool"
@@ -66,7 +67,9 @@ func BenchmarkGetAllS_Postgres_Korm(b *testing.B) {
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
 			_, err := korm.Model[KormTestTable]().Database(kormPostgresDbName).Limit(limit).All()
-			assert.Nil(b, err)
+			if err != kmap.ErrLargeData {
+				assert.Nil(b, err)
+			}
 		})
 	}
 	p.Wait()
@@ -77,8 +80,8 @@ func BenchmarkGetAllM_Postgres_Korm(b *testing.B) {
 	for i := uint64(1); i <= uint64(b.N); i++ {
 		p.Go(func() {
 			_, err := korm.Table(kormTableName).Database(kormPostgresDbName).Limit(limit).All()
-			if err != nil {
-				b.Error("error BenchmarkGetAllM:", err)
+			if err != kmap.ErrLargeData {
+				assert.Nil(b, err)
 			}
 		})
 	}
@@ -93,7 +96,9 @@ func BenchmarkGetRowS_Postgres_Korm(b *testing.B) {
 			_, err := korm.Model[KormTestTable]().Where("content = ?",
 				S.EncodeCB63(1+uint64(i)%total, 0),
 			).Database(kormPostgresDbName).One()
-			assert.Nil(b, err)
+			if err != kmap.ErrLargeData {
+				assert.Nil(b, err)
+			}
 		})
 	}
 	p.Wait()
@@ -107,7 +112,9 @@ func BenchmarkGetRowM_Postgres_Korm(b *testing.B) {
 			_, err := korm.Table(kormTableName).Database(kormPostgresDbName).Where("content = ?",
 				S.EncodeCB63(1+uint64(i)%total, 0),
 			).One()
-			assert.Nil(b, err)
+			if err != kmap.ErrLargeData {
+				assert.Nil(b, err)
+			}
 		})
 	}
 	p.Wait()

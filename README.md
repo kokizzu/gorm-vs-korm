@@ -10,11 +10,15 @@ go test -bench=Pgx -benchmem .
 
 goos: linux
 goarch: amd64
+```
 
-S = struct, M = map, A = array
+## 2023-01-14 10K rows, GetAll select all rows, concurrency: 32
 
-10K rows, GetAll select all rows, concurrency: 32
+- S = struct, M = map, A = array
+- disabled cache for KORM
+- tarantool 10x less rps when only 1 core utilized (without `conc`)
 
+```
 InsertS_Cockroach_Gorm-32   10000    163963 ns/op       1.64 s         
 InsertS_Cockroach_Korm-32   10000    434172 ns/op       4.34 s
 InsertS_Postgres_Gorm-32    10000    154924 ns/op       1.55 s
@@ -55,13 +59,15 @@ GetRowS_Sqlite_Gorm-32      70897     16205 ns/op     4183 B/op         92 alloc
 GetRowS_Sqlite_Korm-32     117987     12081 ns/op     2148 B/op         64 allocs/op
 GetRowS_Taran_ORM-32       298116      3726 ns/op     1057 B/op         24 allocs/op
 GetRowS_Taran_Raw-32       161505      7447 ns/op     2425 B/op         51 allocs/op
+```
 
-100K rows, GetAll select 1000 rows unordered, concurrency: 32
+## 2023-01-15 100K rows, GetAll select 1000 rows unordered, concurrency: 32
 
-SQLite = too slow
-Gorm = too many errors, connection reset by peer
-Korm = failed update postgres tests
+- SQLite = too slow
+- Gorm = too many errors, connection reset by peer
+- Korm = failed update postgres tests
 
+```
 InsertS_Cockroach_Korm-32   100000   451436 ns/op  45.14 s
 Insert_Cockroach_Pgx-32     100000    99197 ns/op   9.92 s
 InsertS_Postgres_Korm-32    100000   172047 ns/op  17.20 s
@@ -97,10 +103,70 @@ GetRowS_Postgres_Pgx-32     226089     5308 ns/op      619 B/op    15 allocs/op
 GetRowS_Taran_ORM-32        297463     3724 ns/op     1058 B/op    24 allocs/op -- fastest
 GetRowS_Taran_Raw-32        113793    10017 ns/op     2509 B/op    56 allocs/op 
 ```
+## 2023-01-18 100K Rows, GetAll Select 1000 Rows ordered, concurrency: 32
 
-Note:
-- disabled cache for KORM
-- tarantool 10x less rps when only 1 core utilized (without `conc`)
+- korm still failed for postgres-update benchmark BenchmarkUpdate_Postgres_Korm
+- korm return error when failed to set cache, so have to check for map.ErrLargeData
+- enable korm cache but limit to 1MB, since it would make realistic benchmark for cases when database multitude times larger than RAM size
+
+```
+GetAllA_Taran_ORM-32          3799   294895 ns/op    157528 B/op   4702 allocs/op
+                                                                                
+GetAllM_Cockroach_Korm-32     7966   136781 ns/op    417854 B/op   5972 allocs/op
+GetAllM_Postgres_Korm-32     12549    96720 ns/op    391705 B/op   5734 allocs/op -- fastest
+GetAllM_Taran_Raw-32          1560   778315 ns/op   1248589 B/op   6733 allocs/op
+                                                                                
+GetAllS_Cockroach_Korm-32     5606   209751 ns/op    167810 B/op   8000 allocs/op
+GetAllS_Cockroach_Pgx-32     14605    81561 ns/op     58492 B/op   2951 allocs/op
+GetAllS_Postgres_Korm-32      6732   167764 ns/op    165970 B/op   7770 allocs/op
+GetAllS_Postgres_Pgx-32      37880    32951 ns/op     59516 B/op   2996 allocs/op -- fastest
+GetAllS_Taran_ORM-32          3889   298250 ns/op    233923 B/op   4714 allocs/op
+GetAllS_Taran_Raw-32          1372   779119 ns/op    936611 B/op   5735 allocs/op
+                                                                                
+GetRowM_Cockroach_Korm-32    51204    23929 ns/op      1759 B/op     44 allocs/op
+GetRowM_Postgres_Korm-32     93279    13097 ns/op      1760 B/op     44 allocs/op
+GetRowM_Taran_Raw-32        132504     8602 ns/op      2556 B/op     57 allocs/op -- fastest
+                                                                                
+GetRowS_Cockroach_Korm-32     9536   141470 ns/op      2756 B/op     72 allocs/op
+GetRowS_Cockroach_Pgx-32     81296    14748 ns/op       619 B/op     15 allocs/op
+GetRowS_Postgres_Korm-32     10000   117153 ns/op      2755 B/op     72 allocs/op
+GetRowS_Postgres_Pgx-32     199897     6032 ns/op       619 B/op     15 allocs/op
+GetRowS_Taran_ORM-32        304686     3676 ns/op      1114 B/op     26 allocs/op -- fastest
+GetRowS_Taran_Raw-32        112923     9554 ns/op      2570 B/op     58 allocs/op
+                                                                                    
+Insert_Cockroach_Pgx-32     100000    96523 ns/op        9.65 s
+Insert_Postgres_Pgx-32      100000    53829 ns/op        5.38 s
+InsertS_Cockroach_Korm-32   100000   121974 ns/op       12.19 s
+InsertS_Postgres_Korm-32    100000    85382 ns/op        8.54 s
+InsertS_Taran_ORM-32        100000    31075 ns/op        3.11 s -- fastest
+                                                                                    
+Update_Cockroach_Korm-32    200000    35877 ns/op        7.18 s
+Update_Cockroach_Pgx-32     200000   283554 ns/op       56.71 s
+Update_Postgres_Pgx-32      200000    53921 ns/op       10.78 s
+Update_Taran_ORM-32         200000      179 ns/op        0.04 s -- fastest
+
+```
+
+To be fair with korm that optimized for cases when database data size is smaller than RAM (cache set to 100MB)
+
+
+```
+BenchmarkGetAllM_Cockroach_Korm-32   2105178       546.8 ns/op     32 B/op     2 allocs/op
+BenchmarkGetAllM_Postgres_Korm-32    2171280       568.3 ns/op     32 B/op     2 allocs/op
+
+BenchmarkGetAllS_Cockroach_Korm-32   1852326       682.0 ns/op    256 B/op     3 allocs/op
+BenchmarkGetAllS_Postgres_Korm-32    1690938       703.8 ns/op    256 B/op     3 allocs/op
+
+BenchmarkGetRowM_Cockroach_Korm-32     52078     19679 ns/op     1655 B/op    38 allocs/op
+BenchmarkGetRowM_Postgres_Korm-32      92900     11864 ns/op     1819 B/op    42 allocs/op
+
+BenchmarkGetRowS_Cockroach_Korm-32      9546    140996 ns/op     3004 B/op    73 allocs/op
+BenchmarkGetRowS_Postgres_Korm-32       7900    133152 ns/op     3005 B/op    73 allocs/op
+
+BenchmarkInsertS_Postgres_Korm-32     100000     84714 ns/op       8.47 s
+BenchmarkUpdate_Cockroach_Korm-32     200000     33460 ns/op       6.69 s
+```
+
 
 ## Conclusion
 
