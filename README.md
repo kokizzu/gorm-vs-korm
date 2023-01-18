@@ -129,6 +129,10 @@ GetRowS_Taran_Raw-32        113793    10017 ns/op     2509 B/op    56 allocs/op
 - enable korm cache but limit to 1MB, since it would make realistic benchmark for cases when database multitude times larger than RAM size
 
 ```
+## korm 1.4.3
+## pgx 5.2.0
+## go-tarantool 1.10.0
+
 GetAllA_Taran_ORM-32          3799   294895 ns/op    157528 B/op   4702 allocs/op
                                                                                 
 GetAllM_Cockroach_Korm-32     7966   136781 ns/op    417854 B/op   5972 allocs/op
