@@ -37,7 +37,7 @@ func BenchmarkInsertS_Taran_ORM(b *testing.B) {
 			row := wcTest.NewTestTable2Mutator(taran)
 			row.Id = z
 			row.Content = S.EncodeCB63(z, 0)
-			ok := row.DoUpsert()
+			ok := row.DoUpsertById()
 			assert.True(b, ok)
 		})
 	}

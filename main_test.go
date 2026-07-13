@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/kamalshkeir/korm"
-	_ "github.com/kamalshkeir/pgdriver"
+	"github.com/kamalshkeir/pgdriver"
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/L"
 
@@ -71,6 +72,11 @@ CREATE TABLE IF NOT EXISTS test_table3 (
 );`
 
 func TestMain(m *testing.M) {
+	if os.Getenv("RUN_DB_BENCHMARKS") != "1" {
+		log.Println("skipping database benchmarks; set RUN_DB_BENCHMARKS=1 to run them")
+		os.Exit(m.Run())
+	}
+
 	var err error
 
 	//log.Println(`sqlite`)
@@ -107,7 +113,7 @@ func TestMain(m *testing.M) {
 
 		log.Println(`korm`)
 		{
-			err = korm.New(korm.POSTGRES, kormPostgresDbName, kormPostgresConnStr)
+			err = korm.New(korm.POSTGRES, kormPostgresDbName, pgdriver.Use(), kormPostgresConnStr)
 			L.PanicIf(err, `korm.New`)
 			err = korm.AutoMigrate[KormTestTable](kormTableName, kormPostgresDbName)
 			L.PanicIf(err, `korm.AutoMigrate`)
@@ -134,7 +140,7 @@ func TestMain(m *testing.M) {
 
 		log.Println(`korm`)
 		{
-			err = korm.New(korm.COCKROACH, kormCockroachDbName, kormCockroachConnStr)
+			err = korm.New(korm.COCKROACH, kormCockroachDbName, pgdriver.Use(), kormCockroachConnStr)
 			L.PanicIf(err, `korm.New`)
 			err = korm.AutoMigrate[KormTestTable](kormTableName, kormCockroachDbName)
 			L.PanicIf(err, `korm.AutoMigrate`)
@@ -166,7 +172,7 @@ func TestMain(m *testing.M) {
 	}
 
 	log.Println(`start test`)
-	m.Run()
+	os.Exit(m.Run())
 }
 
 var runOnce = map[string]bool{}

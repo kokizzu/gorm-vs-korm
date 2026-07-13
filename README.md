@@ -16,11 +16,22 @@ goarch: amd64
 
 ```shell
 ./clean-start.sh
-go test -bench=Korm -benchmem .
-go test -bench=Gorm -benchmem .
-go test -bench=Taran -benchmem .
-go test -bench=Pgx -benchmem .
+make test
+make benchmark
+make generate-orm
+make tarantool-integration-test
 ```
+
+`make test` is a portable compile/sanity check. `make benchmark` sets `RUN_DB_BENCHMARKS=1` and expects the Docker Compose services to be running.
+
+## Maintenance checklist
+
+- [x] Go runtime updated to 1.26.5.
+- [x] Direct Go dependencies refreshed and module files tidied.
+- [x] KORM benchmark setup updated for the current driver-based constructor.
+- [x] Tarantool ORM files regenerated for the current gotro/Tarantool v2 API.
+- [x] Default `make test` avoids live database benchmarks and source regeneration; `make benchmark`, `make generate-orm`, and `make tarantool-integration-test` keep those paths explicit.
+- [x] `make verify-dependency-security` and `make vulncheck` check dependency security.
 
 ## 2023-01-14 Result 10K rows, GetAll select all rows, concurrency: 32
 

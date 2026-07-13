@@ -53,3 +53,5 @@ var Tables = map[TableName]*TableProp{
 	},
 	// to be fair, not making an index on "content"
 }
+
+var TarantoolTables = Tables
