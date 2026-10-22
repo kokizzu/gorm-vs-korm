@@ -44,8 +44,8 @@ var Tables = map[TableName]*TableProp{
 	// primary key must be first field and set to Unique: fieldName
 	TableTestTable2: {
 		Fields: []Field{
-			{IdCol, Unsigned},
-			{`content`, String},
+			{Name: IdCol, Type: Unsigned},
+			{Name: `content`, Type: String},
 		},
 		Unique1:         `content`,
 		AutoIncrementId: true,

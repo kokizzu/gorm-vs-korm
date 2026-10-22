@@ -10,7 +10,7 @@ benchmark:
 	RUN_DB_BENCHMARKS=1 $(GO) test -bench=. -benchmem .
 
 generate-orm:
-	RUN_TARANTOOL_GENERATOR=1 $(GO) test ./mTest -run TestGenerateOrm
+	python3 scripts/generate-orm.py "$(GO)"
 
 tarantool-integration-test:
 	RUN_TARANTOOL_INTEGRATION=1 $(GO) test ./mTest/...

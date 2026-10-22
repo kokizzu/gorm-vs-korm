@@ -3,19 +3,19 @@ package wcTest
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 import (
-	`context`
-	`fmt`
-	`log`
-	`os`
-	`testing`
-	`time`
-	`korm1/mTest`
-	`github.com/kokizzu/gotro/D/Tt`
-	`github.com/kokizzu/gotro/L`
-	`github.com/kokizzu/gotro/S`
-	`github.com/ory/dockertest/v3`
-	`github.com/stretchr/testify/assert`
-	`github.com/tarantool/go-tarantool/v2`
+	"context"
+	"fmt"
+	"github.com/kokizzu/gotro/D/Tt"
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/S"
+	"github.com/ory/dockertest/v3"
+	"github.com/stretchr/testify/assert"
+	"github.com/tarantool/go-tarantool/v2"
+	"korm1/mTest"
+	"log"
+	"os"
+	"testing"
+	"time"
 )
 
 var globalPool *dockertest.Pool
@@ -92,9 +92,9 @@ func TestGeneratedSanity(t *testing.T) {
 	a.MigrateTables(map[Tt.TableName]*Tt.TableProp{
 		"bands": {
 			Fields: []Tt.Field{
-				{"id", Tt.Unsigned},
-				{"band_name", Tt.String},
-				{"year", Tt.Unsigned},
+				{Name: "id", Type: Tt.Unsigned},
+				{Name: "band_name", Type: Tt.String},
+				{Name: "year", Type: Tt.Unsigned},
 			},
 			AutoIncrementId: true,
 			Unique1:         "band_name",
@@ -115,7 +115,7 @@ func TestGeneratedSanity(t *testing.T) {
 	assert.NoError(t, err)
 	_, err = conn.Do(tarantool.NewSelectRequest("bands").Index("band_name").Limit(10).Iterator(tarantool.IterEq).Key([]any{"The Beatles"})).Get()
 	assert.NoError(t, err)
-	_, err = conn.Do(tarantool.NewUpdateRequest("bands").Key(tarantool.IntKey{2}).Operations(tarantool.NewOperations().Assign(1, "Pink Floyd"))).Get()
+	_, err = conn.Do(tarantool.NewUpdateRequest("bands").Key(tarantool.IntKey{I: 2}).Operations(tarantool.NewOperations().Assign(1, "Pink Floyd"))).Get()
 	assert.NoError(t, err)
 	_, err = conn.Do(tarantool.NewUpsertRequest("bands").Tuple([]any{uint(5), "The Rolling Stones", 1962}).Operations(tarantool.NewOperations().Assign(1, "The Doors"))).Get()
 	assert.NoError(t, err)
@@ -274,4 +274,3 @@ func TestGeneratedTestTable2LargeUnsignedRoundTrip(t *testing.T) {
 	deleted.Id = largeUnsignedId
 	assert.False(t, deleted.FindById())
 }
-

@@ -3,9 +3,9 @@ package rqTest
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 import (
-	`testing`
-	`github.com/stretchr/testify/assert`
-	`github.com/kokizzu/gotro/D/Tt`
+	"github.com/kokizzu/gotro/D/Tt"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestGeneratedTestTable2OrmHelpers(t *testing.T) {
@@ -44,4 +44,3 @@ func TestGeneratedTestTable2DbMethodsPanic(t *testing.T) {
 	assert.Panics(t, func() { _, _ = q.FindArrOffsetLimit(0, 1, "") })
 	assert.Panics(t, func() { _ = q.Total() })
 }
-
